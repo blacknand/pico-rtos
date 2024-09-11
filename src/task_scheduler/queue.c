@@ -27,3 +27,14 @@ void dequeue(void) {
         front++;
     }
 }
+
+
+void output_queue(void) {
+    if (front == -1)
+        printf("Queue is empty\n");
+    else {
+        printf("Queue:\n");
+        for (int i = front; i <= rear; i++)
+            printf("%d\n", inp_arr[i]);
+    }
+}
