@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include "queue.h"
 
+int inp_arr[4];
+int rear = -1;
+int front = -1;
+
 void enqueue(int insert_item) {
     // Inserts items into the end of the queue
     // https://www.digitalocean.com/community/tutorials/queue-in-c
-    int insert_item;
 
     if (rear == SIZE - 1)
         printf("Queue overflow when trying to enter %d\n", insert_item);
@@ -12,7 +15,7 @@ void enqueue(int insert_item) {
         if (front == -1) {
             front = 0;
         rear++;
-        inp_arr[read] = insert_item;
+        inp_arr[rear] = insert_item;
         }
     }
 }
