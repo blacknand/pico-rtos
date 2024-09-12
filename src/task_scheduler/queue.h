@@ -1,5 +1,5 @@
 #ifndef SIZE
-#define SIZE 100
+#define SIZE 4
 #endif
 
 void enqueue(int insert_item);

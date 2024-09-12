@@ -12,11 +12,11 @@ void enqueue(int insert_item) {
     if (rear == SIZE - 1)
         printf("Queue overflow when trying to enter %d\n", insert_item);
     else {
-        if (front == -1) {
+        if (front == -1)
             front = 0;
         rear++;
         inp_arr[rear] = insert_item;
-        }
+        printf("Added %d into the queue\n", insert_item);
     }
 }
 
@@ -27,6 +27,7 @@ void dequeue(void) {
         printf("Queue underflow\n");
         return;
     } else {
+        printf("Removing %d from the queue\n", inp_arr[front]);
         front++;
     }
 }
