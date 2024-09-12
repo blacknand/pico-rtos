@@ -42,3 +42,14 @@ void output_queue(void) {
             printf("%d\n", inp_arr[i]);
     }
 }
+
+
+int peek(void) {
+    // Return value at front of stack
+    if (front == -1 || front > rear) {
+        printf("Queue is empty, nothing to peek\n");
+        return -1;
+    } else {
+        return inp_arr[front];
+    }
+}
