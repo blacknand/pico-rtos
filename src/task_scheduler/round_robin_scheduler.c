@@ -13,7 +13,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "round_robin_scheduler.c"
+#include "round_robin_scheduler.h"
 #include "queue.h"
 
 #ifndef FIXED_INTERVAL
@@ -25,27 +25,16 @@
 #endif
 
 
-int init(void) {
+int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
+                          void (*func_ptr3) (void), void (*func_ptr4) (void)) {
     // https://www.scaler.com/topics/round-robin-scheduling-in-os/
-    int processes = 4
+    int processes = 4;
     int time_quantum = 4;
     struct process_struct process;
     float avg_wait, avg_turn;
     int total_turn = 0, burst_arr[50];
 
-    // Create function pointers to function processes
-    void (*flash_pico_led_ptr) (void);
-    flash_pico_led_ptr = &flash_pico_led;
-
-    void (*output_task1_ptr) (void);
-    output_task1_ptr = &output_task1;
-
-    void (*ouput_task2_ptr) (void);
-    output_task2_ptr = &output_task2;
-    
-    void (*output_task3_ptr) (void);
-    output_task3_ptr = &output_task3;
-
+    void (*tasks_arr[4]) (void) = {func_ptr1, func_ptr2, func_ptr3, func_ptr4};
 
     /* Set arrival time and burst time */
     // flash_pico_led
@@ -92,6 +81,7 @@ int init(void) {
             process[index].waiting_time = process[index].turn_time - process[index].burst_time;
             total_waiting += process[index].waiting_time;
             total_turn += process[index].turn_time;
+            tasks_arr[index]();                                                 // Execute task via function pointer
             completed++;
             burst_arr[index] = 0;
         }

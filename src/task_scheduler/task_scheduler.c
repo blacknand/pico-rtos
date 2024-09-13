@@ -74,7 +74,6 @@ void output_task3(void) {
 int main() {
     stdio_init_all();
     sleep_ms(1000);
-    // init();             // CPU round robin scheduler initialisation
     flash_pico_led();
     output_task1();
     output_task2();
