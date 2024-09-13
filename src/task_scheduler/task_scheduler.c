@@ -40,8 +40,10 @@ void flash_pico_led(void) {
     hard_assert(rc == PICO_OK);
     for (int i = 0; i < 10; i++) {
         pico_set_led(true);
+        printf("LED on\n");
         sleep_ms(LED_DELAY_MS);
         pico_set_led(false);
+        printf("LED off\n");
         sleep_ms(LED_DELAY_MS);
     }
     return;
@@ -70,6 +72,8 @@ void output_task3(void) {
 
 
 int main() {
+    stdio_init_all();
+    sleep_ms(1000);
     // init();             // CPU round robin scheduler initialisation
     flash_pico_led();
     output_task1();
