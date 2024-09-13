@@ -19,7 +19,7 @@ int pico_led_init(void) {
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     return PICO_OK;
-#elif defined(CYWR3_WL_GPIO_LED_PIN)
+#elif defined(CYW43_WL_GPIO_LED_PIN)
     return cyw43_arch_init();
 #endif
 }
@@ -44,6 +44,7 @@ void flash_pico_led(void) {
         pico_set_led(false);
         sleep_ms(LED_DELAY_MS);
     }
+    return;
 }
 
 
