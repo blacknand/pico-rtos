@@ -33,6 +33,20 @@ int init(void) {
     float avg_wait, avg_turn;
     int total_turn = 0, burst_arr[50];
 
+    // Create function pointers to function processes
+    void (*flash_pico_led_ptr) (void);
+    flash_pico_led_ptr = &flash_pico_led;
+
+    void (*output_task1_ptr) (void);
+    output_task1_ptr = &output_task1;
+
+    void (*ouput_task2_ptr) (void);
+    output_task2_ptr = &output_task2;
+    
+    void (*output_task3_ptr) (void);
+    output_task3_ptr = &output_task3;
+
+
     /* Set arrival time and burst time */
     // flash_pico_led
     process[0].arrival_time = 0;

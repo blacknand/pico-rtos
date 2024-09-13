@@ -46,7 +46,9 @@ pico_enable_stdio_usb(task_scheduler 0)
 
 # Add the standard library to the build
 target_link_libraries(task_scheduler
-        pico_stdlib)
+        pico_stdlib
+        hardware_gpio
+        pico_cyw43_arch_lwip_threadsafe_background)                 # Link cyw43 wifi driver
 
 # Add the standard include files to the build
 target_include_directories(task_scheduler PRIVATE

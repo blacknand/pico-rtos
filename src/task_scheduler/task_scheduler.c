@@ -28,7 +28,7 @@ int pico_led_init(void) {
 void pico_set_led(bool led_on) {
 #if defined(PICO_DEFAULT_LED_PIN)
     gpio_put(PICO_DEFAULT_LED_PIN, led_on);
-#elif defined(CYW43_WL_GPIO_LED_PIN, led_on)
+#elif defined(CYW43_WL_GPIO_LED_PIN)
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_on);
 #endif
 }
@@ -69,5 +69,9 @@ void output_task3(void) {
 
 
 int main() {
-
+    // init();             // CPU round robin scheduler initialisation
+    flash_pico_led();
+    output_task1();
+    output_task2();
+    output_task3();
 }
