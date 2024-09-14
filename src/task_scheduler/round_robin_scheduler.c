@@ -28,18 +28,19 @@
 int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
                           void (*func_ptr3) (void), void (*func_ptr4) (void)) {
     // https://www.scaler.com/topics/round-robin-scheduling-in-os/
-    int processes = 4;
-    int time_quantum = 4;
-    struct process_struct process;
-    float avg_wait, avg_turn;
+    int processes = 4;                                                  // The number of processes to execute
+    int time_quantum = 4;                                               // The alloted number of seconds during a time quantum
+    struct process_struct process;              
+    float avg_wait, avg_turn;                               
     int total_turn = 0, burst_arr[50];
 
     void (*tasks_arr[4]) (void) = {func_ptr1, func_ptr2, func_ptr3, func_ptr4};
+    const char *task_names[4] = {"flash_pico_led", "output_task1", "output_task2", "output_task3"};
 
     /* Set arrival time and burst time */
     // flash_pico_led
     process[0].arrival_time = 0;
-    process[0].burst_time = 10 * (2 * LED_DELAY_MS);
+    process[0].burst_time = 10 * (2 * LED_DELAY_MS);                    // Calculate the amount of time for the LED to blink 10 times + initialisation
     burst_arr[0] = prcoess[0].burst_time;
     // output_task1
     process[1].arrival_time = 1;
@@ -54,17 +55,17 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
     process[3].arrival_time = 1000;
     burst_arr[3] = process[3].burst_time;
 
-    int current_time = 0;
+    int current_time = 0;                                               // Keep track of the time
     enqueue(0);
-    int completed = 0;
-    int mark[4];
+    int completed = 0;                                                  // Number of completed processes
+    int mark[4];                                                        // Array of processes that have been queued or not; queued == 1, not queued == 2
     memset(mark, 0, sizeof(mark));
-    mark[0] = 1;
+    mark[0] = 1;                                                        // Mark first process as enqued to initialise
 
     while (completed != n) {
         // Give quantum time to process that is at front of the queue and pop this process from the queue
         index = peek();
-        dequeue();
+        dequeue();                                                      // Pop first process from the queue
 
         // If process is being executed for first time, set its start time
         if (burst_arr[index] == process[index].burst_time) {
@@ -72,12 +73,19 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
             current_time = process[index].start_time;
         }
 
-        // Check if remaning burst time is > quantum time
+        /** 
+         * Check if remaning burst time is > quantum time.
+         * Instead of keeping track of where a function was left off during execution when it's
+         * quantum time was up, just subtract the amount of time the function spent during it's
+         * first round of exectuion, and then subtract that from the second time or n'th time it
+         * executes to create the illusion of the function carrying on from where it was left off
+        */
         if (0 < burst_arr[index] - time_quantum) {
-            burst_arr[index] -= time_quantum;                           // Reduce burst time by quantum time already exectued
+            burst_arr[index] -= time_quantum;                                   // Reduce burst time by quantum time already exectued
             current_time += time_quantum;                             
         } else {
             // Process completes during quantum time
+            printf("Executing function: %s\n", task_names[index]);
             tasks_arr[index]();                                                 // Execute task via function pointer
             current_time += burst_arr[index];
             process[index].completion_time = current_time;
