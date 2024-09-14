@@ -66,27 +66,30 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
         index = peek();
         dequeue();
 
+        // If process is being executed for first time, set its start time
         if (burst_arr[index] == process[index].burst_time) {
-            process[index].start_time = max(current_time, process[index].arrival_time);
+            process[index].start_time = max(current_time, process[index].arrival_time);  
             current_time = process[index].start_time;
         }
 
+        // Check if remaning burst time is > quantum time
         if (0 < burst_arr[index] - time_quantum) {
-            burst_arr[index] -= time_quantum;
-            current_time += time_quantum;
+            burst_arr[index] -= time_quantum;                           // Reduce burst time by quantum time already exectued
+            current_time += time_quantum;                             
         } else {
+            // Process completes during quantum time
+            tasks_arr[index]();                                                 // Execute task via function pointer
             current_time += burst_arr[index];
             process[index].completion_time = current_time;
             process[index].turn_time = process[index].completion_time - process[index].arrival_time;
             process[index].waiting_time = process[index].turn_time - process[index].burst_time;
             total_waiting += process[index].waiting_time;
             total_turn += process[index].turn_time;
-            tasks_arr[index]();                                                 // Execute task via function pointer
             completed++;
             burst_arr[index] = 0;
         }
 
-        // If some process has arrived when this process was executing insert them into queue
+        // Check if an additional process has arrived during exectuion of current process and enque it
         for (int i = 1; i < n; i++) {
             if (burst_arr[i] > 0 && process[i].arrival_time <= current_time && mark[i] == 0) {
                 mark[i] = 1;
