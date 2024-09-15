@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "round_robin_scheduler.h"
 
 /**
  *  Pico W microcontrollers use a GPIO on the WiFi chip for the LED,
  *  so when building for Pico W, CYW43_WL_GPIO_LED_PIN will be defined
  */
-#ifndef CYW43_WL_GPIO_LED_PIN
+#ifdef CYW43_WL_GPIO_LED_PIN
 #include "pico/cyw43_arch.h"
 #endif
 
@@ -74,8 +75,15 @@ void output_task3(void) {
 int main() {
     stdio_init_all();
     sleep_ms(1000);
-    flash_pico_led();
-    output_task1();
-    output_task2();
-    output_task3();
+
+    void (*flash_pico_led_func_ptr) (void);
+    void (*output_task1_func_ptr) (void);
+    void (*output_task2_func_ptr) (void);
+    void (*output_task3_func_ptr) (void);
+    flash_pico_led_func_ptr = &flash_pico_led;
+    output_task1_func_ptr = &output_task1;
+    output_task2_func_ptr = &output_task2;
+    output_task3_func_ptr = &output_task3;
+    round_robin_scheduler(flash_pico_led_func_ptr, output_task1_func_ptr,
+                          output_task2_func_ptr, output_task3_func_ptr);
 }

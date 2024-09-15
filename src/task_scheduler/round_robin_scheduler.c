@@ -25,14 +25,19 @@
 #endif
 
 
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+
 int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
                           void (*func_ptr3) (void), void (*func_ptr4) (void)) {
     // https://www.scaler.com/topics/round-robin-scheduling-in-os/
     int processes = 4;                                                  // The number of processes to execute
     int time_quantum = 4;                                               // The alloted number of seconds during a time quantum
-    struct process_struct process;              
+    struct process_struct process[4];              
     float avg_wait, avg_turn;                               
-    int total_turn = 0, burst_arr[50];
+    int total_turn = 0, burst_arr[50], total_waiting = 0;
 
     void (*tasks_arr[4]) (void) = {func_ptr1, func_ptr2, func_ptr3, func_ptr4};
     const char *task_names[4] = {"flash_pico_led", "output_task1", "output_task2", "output_task3"};
@@ -41,7 +46,7 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
     // flash_pico_led
     process[0].arrival_time = 0;
     process[0].burst_time = 10 * (2 * LED_DELAY_MS);                    // Calculate the amount of time for the LED to blink 10 times + initialisation
-    burst_arr[0] = prcoess[0].burst_time;
+    burst_arr[0] = process[0].burst_time;
     // output_task1
     process[1].arrival_time = 1;
     process[1].arrival_time = 1000;
@@ -62,9 +67,9 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
     memset(mark, 0, sizeof(mark));
     mark[0] = 1;                                                        // Mark first process as enqued to initialise
 
-    while (completed != n) {
+    while (completed != processes) {
         // Give quantum time to process that is at front of the queue and pop this process from the queue
-        index = peek();
+        int index = peek();
         dequeue();                                                      // Pop first process from the queue
 
         // If process is being executed for first time, set its start time
@@ -98,7 +103,7 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
         }
 
         // Check if an additional process has arrived during exectuion of current process and enque it
-        for (int i = 1; i < n; i++) {
+        for (int i = 1; i < processes; i++) {
             if (burst_arr[i] > 0 && process[i].arrival_time <= current_time && mark[i] == 0) {
                 mark[i] = 1;
                 enqueue(i);
@@ -107,8 +112,8 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
         }
     }
 
-    avg_waiting = (float) total_waiting / n;
-    avg_turn = (float) total_turn / n;
+    float avg_waiting = (float) total_waiting / processes;
+    avg_turn = (float) total_turn / processes;
 
     // Get data of each process
     printf("Process ID: \t");
@@ -119,7 +124,7 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
     printf("Waiting Time: \t");
     printf("\n");
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < processes; i++) {
         printf("%d\t", i + 1);
         printf("%d\t", process[i].arrival_time);
         printf("%d\t", process[i].burst_time);

@@ -41,7 +41,7 @@ pico_sdk_init()
 
 # Add executable
 # add_executable(task_scheduler task_scheduler.c round_robin_scheduler.c queue.c)
-add_executable(task_scheduler task_scheduler.c)
+add_executable(task_scheduler round_robin_scheduler.c task_scheduler.c)
 
 pico_set_program_name(task_scheduler "task_scheduler")
 pico_set_program_version(task_scheduler "0.1")
@@ -54,7 +54,8 @@ pico_enable_stdio_usb(task_scheduler 0)
 target_link_libraries(task_scheduler
         pico_stdlib
         hardware_gpio
-        pico_cyw43_arch_none)                 # CYW43 library
+        pico_cyw43_arch_none
+        m)                 # CYW43 library
 
 # Add the standard include files to the build
 target_include_directories(task_scheduler PRIVATE
