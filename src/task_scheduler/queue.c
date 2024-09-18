@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "queue.h"
 
-int inp_arr[4];
+int inp_arr[SIZE];
 int rear = -1;
 int front = -1;
 
