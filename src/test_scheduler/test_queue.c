@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../task_scheduler/queue.h"
+#include "queue.h"
 
 int main() {
     printf("Inputting 1, 2, 3, 4 into the quueue\n");

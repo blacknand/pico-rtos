@@ -41,7 +41,7 @@ pico_sdk_init()
 
 # Add executable
 # add_executable(task_scheduler task_scheduler.c round_robin_scheduler.c queue.c)
-add_executable(task_scheduler round_robin_scheduler.c task_scheduler.c)
+add_executable(task_scheduler round_robin_scheduler.c task_scheduler.c queue.c)
 
 pico_set_program_name(task_scheduler "task_scheduler")
 pico_set_program_version(task_scheduler "0.1")
