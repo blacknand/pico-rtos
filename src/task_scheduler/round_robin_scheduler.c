@@ -37,9 +37,11 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
     int time_quantum = 4;                                               // The alloted number of seconds during a time quantum
     struct process_struct process[4];              
     float avg_wait, avg_turn;                               
-    int total_turn = 0, burst_arr[50], total_waiting = 0;
+    int total_turn = 0, burst_arr[4], total_waiting = 0;
 
     void (*tasks_arr[4]) (void) = {func_ptr1, func_ptr2, func_ptr3, func_ptr4};
+    for (int i = 0; i < 4; i++)
+        printf("func ptr: %d - %p\n", i, (void*)tasks_arr[i]);
     const char *task_names[4] = {"flash_pico_led", "output_task1", "output_task2", "output_task3"};
 
     /* Set arrival time and burst time */
@@ -49,15 +51,15 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
     burst_arr[0] = process[0].burst_time;
     // output_task1
     process[1].arrival_time = 1;
-    process[1].arrival_time = 1000;
+    process[1].burst_time = 1000;
     burst_arr[1] = process[1].burst_time;
     // output_task2
     process[2].arrival_time = 2;
-    process[2].arrival_time = 1000;
+    process[2].burst_time = 1000;
     burst_arr[2] = process[2].burst_time;
     // output_task3
     process[3].arrival_time = 3;
-    process[3].arrival_time = 1000;
+    process[3].burst_time = 1000;
     burst_arr[3] = process[3].burst_time;
 
     int current_time = 0;                                               // Keep track of the time
@@ -77,6 +79,8 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
             process[index].start_time = max(current_time, process[index].arrival_time);  
             current_time = process[index].start_time;
         }
+
+        // TODO: When a process is being first executed, it does not actually seem to get executed at all
 
         /** 
          * Check if remaning burst time is > quantum time.
