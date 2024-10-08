@@ -54,13 +54,12 @@ pico_enable_stdio_usb(task_scheduler 0)
 target_link_libraries(task_scheduler
         pico_stdlib
         hardware_gpio
-        pico_cyw43_arch_none
-        m)                 # CYW43 library
+        pico_cyw43_arch_none)                 # CYW43 library
 
 # Add the standard include files to the build
 target_include_directories(task_scheduler PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}
-  ${CMAKE_CURRENT_LIST_DIR}/.. # for our common lwipopts or any other standard includes, if required
+  ${CMAKE_CURRENT_LIST_DIR}/..                      # for our common lwipopts or any other standard includes, if required
 )
 
 pico_add_extra_outputs(task_scheduler)

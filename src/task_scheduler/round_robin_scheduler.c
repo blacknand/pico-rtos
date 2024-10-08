@@ -8,21 +8,33 @@
 */
 
 
+/**
+ * Strong chace this needs to be ran like an FPGA program
+ * what I am thinking is that you run task_scheduler.c once on the Pico
+ * and then you give the input as the setup to ask how many tasks there are to execute
+ * and then it just executes using them
+*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
+#include "pico/stdlib.h"
 #include "round_robin_scheduler.h"
 #include "queue.h"
 
 #ifndef FIXED_INTERVAL
-#define FIXED_INTERVAL  4
+#define FIXED_INTERVAL 4
 #endif
 
 #ifndef LED_DELAY_MS
 #define LED_DELAY_MS 100
 #endif
+
+#define NUM_TASKS 4
+#define TIME_QUANT 1000                         // 1000 ms by default 
 
 
 int max(int a, int b) {
@@ -44,101 +56,12 @@ int round_robin_scheduler(void (*func_ptr1) (void), void (*func_ptr2) (void),
         printf("func ptr: %d - %p\n", i, (void*)tasks_arr[i]);
     const char *task_names[4] = {"flash_pico_led", "output_task1", "output_task2", "output_task3"};
 
-    /* Set arrival time and burst time */
-    // flash_pico_led
-    process[0].arrival_time = 0;
-    process[0].burst_time = 10 * (2 * LED_DELAY_MS);                    // Calculate the amount of time for the LED to blink 10 times + initialisation
-    burst_arr[0] = process[0].burst_time;
-    // output_task1
-    process[1].arrival_time = 1;
-    process[1].burst_time = 1000;
-    burst_arr[1] = process[1].burst_time;
-    // output_task2
-    process[2].arrival_time = 2;
-    process[2].burst_time = 1000;
-    burst_arr[2] = process[2].burst_time;
-    // output_task3
-    process[3].arrival_time = 3;
-    process[3].burst_time = 1000;
-    burst_arr[3] = process[3].burst_time;
-
-    int current_time = 0;                                               // Keep track of the time
-    enqueue(0);
-    int completed = 0;                                                  // Number of completed processes
-    int mark[4];                                                        // Array of processes that have been queued or not; queued == 1, not queued == 2
-    memset(mark, 0, sizeof(mark));
-    mark[0] = 1;                                                        // Mark first process as enqued to initialise
-
-    while (completed != processes) {
-        // Give quantum time to process that is at front of the queue and pop this process from the queue
-        int index = peek();
-        dequeue();                                                      // Pop first process from the queue
-
-        // If process is being executed for first time, set its start time
-        if (burst_arr[index] == process[index].burst_time) {
-            process[index].start_time = max(current_time, process[index].arrival_time);  
-            current_time = process[index].start_time;
-        }
-
-        // TODO: When a process is being first executed, it does not actually seem to get executed at all
-
-        /** 
-         * Check if remaning burst time is > quantum time.
-         * Instead of keeping track of where a function was left off during execution when it's
-         * quantum time was up, just subtract the amount of time the function spent during it's
-         * first round of exectuion, and then subtract that from the second time or n'th time it
-         * executes to create the illusion of the function carrying on from where it was left off
-        */
-        if (0 < burst_arr[index] - time_quantum) {
-            burst_arr[index] -= time_quantum;                                   // Reduce burst time by quantum time already exectued
-            current_time += time_quantum;                             
-        } else {
-            // Process completes during quantum time
-            printf("Executing function: %s\n", task_names[index]);
-            tasks_arr[index]();                                                 // Execute task via function pointer
-            current_time += burst_arr[index];
-            process[index].completion_time = current_time;
-            process[index].turn_time = process[index].completion_time - process[index].arrival_time;
-            process[index].waiting_time = process[index].turn_time - process[index].burst_time;
-            total_waiting += process[index].waiting_time;
-            total_turn += process[index].turn_time;
-            completed++;
-            burst_arr[index] = 0;
-        }
-
-        // Check if an additional process has arrived during exectuion of current process and enque it
-        for (int i = 1; i < processes; i++) {
-            if (burst_arr[i] > 0 && process[i].arrival_time <= current_time && mark[i] == 0) {
-                mark[i] = 1;
-                enqueue(i);
-                break;
-            }
-        }
+    int tasks_index = 0;
+    while (1) {
+        tasks_arr[tasks_index]();                // Execute current function
+        sleep_ms(TIME_QUANT);
+        tasks_index = (tasks_index + 1) % NUM_TASKS;
     }
 
-    float avg_waiting = (float) total_waiting / processes;
-    avg_turn = (float) total_turn / processes;
-
-    // Get data of each process
-    printf("Process ID: \t");
-    printf("Arrival Time: \t");
-    printf("Burst Time: \t");
-    printf("Completion Time: \t");
-    printf("Turn Around Time: \t");
-    printf("Waiting Time: \t");
-    printf("\n");
-
-    for (int i = 0; i < processes; i++) {
-        printf("%d\t", i + 1);
-        printf("%d\t", process[i].arrival_time);
-        printf("%d\t", process[i].burst_time);
-        printf("%d\t", process[i].completion_time);
-        printf("%d\t", process[i].turn_time);
-        printf("%d\t", process[i].waiting_time);
-        printf("\n");
-    }
-
-    printf("Average waiting time: %.2f\n", avg_waiting);
-    printf("Average turnaround time: %.2f\n", avg_turn);
     return 0;
 }

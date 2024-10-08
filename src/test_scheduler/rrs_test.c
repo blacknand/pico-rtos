@@ -116,43 +116,32 @@ int main() {
         }
     }
 
-    printf("Process number: ");
-    printf("Arrival time: ");
-    printf("Burst time: ");
-    printf("\t Start time: ");
-
-    int j = 0;
-    while (j != 10) {
-        j += 1;
-        printf(" ");
-    }
-
-    printf("\t\tFinal time: ");
-    printf("\tWait time: ");
-    printf("\tTurn around time:\n");
+    printf("%-15s %-15s %-15s %-25s %-15s %-15s %-15s\n", 
+           "Process number", "Arrival time", "Burst time", "Start times", 
+           "Final time", "Wait time", "Turn around time");
 
     for (int i = 0; i < processes_num; i++) {
-        printf("%d \t\t", processes[i].pos);
-        printf("%d \t\t", processes[i].arrival_time);
-        printf("%d \t", processes[i].burst_time);
+        // Print the process details with the same fixed column widths
+        printf("%-15d %-15d %-15d ", 
+               processes[i].pos, 
+               processes[i].arrival_time, 
+               processes[i].burst_time);
 
-        j = 0;
-        int k = 0;
-
+        // Print all start times for the process
+        int j = 0;
         while (start_times[i][j] != -1) {
-            printf("%d ", processes[i].start_time[j]);
+            printf("%d ", start_times[i][j]);
             j++;
-            k += 3;
         }
 
-        while (k != 40) {
-            printf(" ");
-            k += 1;
-        }
+        // Ensure enough padding after start times
+        printf("%*s", 25 - (j * 3), "");
 
-        printf("%d \t\t", processes[i].final_time);
-        printf("%d \t\t", processes[i].wait_time);
-        printf("%d \n", processes[i].turn_around_time);
+        // Print the final time, wait time, and turn-around time in the corresponding columns
+        printf("%-15d %-15d %-15d\n", 
+               processes[i].final_time, 
+               processes[i].wait_time, 
+               processes[i].turn_around_time);
     }
 
     // Calculate average wait time and turn around time
@@ -160,6 +149,7 @@ int main() {
     avg_wait_time = total_wait_time / (float) processes_num;
     avg_turn_around_time = total_turn_around_time / (float) processes_num;
 
+    printf("\n");
     printf("Average wait time:              %lf\n", avg_wait_time);
     printf("Average turn around time:       %lf\n", avg_turn_around_time);
 

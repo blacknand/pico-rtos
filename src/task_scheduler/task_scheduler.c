@@ -85,5 +85,5 @@ int main() {
     output_task2_func_ptr = &output_task2;
     output_task3_func_ptr = &output_task3;
     round_robin_scheduler(flash_pico_led_func_ptr, output_task1_func_ptr,
-                          output_task2_func_ptr, output_task3_func_ptr);
+                          output_task2_func_ptr, output_task3_func_ptr);    
 }
