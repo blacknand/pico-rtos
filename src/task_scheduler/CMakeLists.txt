@@ -50,6 +50,10 @@ pico_set_program_version(task_scheduler "0.1")
 pico_enable_stdio_uart(task_scheduler 1)
 pico_enable_stdio_usb(task_scheduler 0)
 
+# Set the correct C and C++ compilers for ARM Cortex-M0+
+set(CMAKE_C_COMPILER "/Users/nathanblackburn/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-gcc")
+set(CMAKE_CXX_COMPILER "/Users/nathanblackburn/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-g++")
+
 # Add the standard library to the build
 target_link_libraries(task_scheduler
         pico_stdlib
