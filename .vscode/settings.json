@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "variant": "c"
+    },
+    
+    "cmake.sourceDirectory": "/Users/nathanblackburn/programming/pico_rtos/src/task_scheduler",
+    "cmake.buildDirectory": "${workspaceFolder}/src/task_scheduler/build",
+    
+    "terminal.integrated.env.osx": {
+        "PICO_SDK_PATH": "/Users/nathanblackburn/pico-sdk"
+    }
+}
